@@ -7,14 +7,19 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tooltip } from "@/components/ui/tooltip"
 import { ContractorTooltip } from "@/components/contractor-tooltip"
+import { EditContractorDialog } from "@/components/edit-contractor-dialog"
 import { ChevronLeft, ChevronRight, CalendarIcon } from "lucide-react"
 
 interface CalendarViewProps {
   data: ContractorVisit[]
+  onUpdate: (id: string, data: Partial<ContractorVisit>) => void
+  onDelete: (id: string) => void
 }
 
-export function CalendarView({ data }: CalendarViewProps) {
+export function CalendarView({ data, onUpdate, onDelete }: CalendarViewProps) {
   const [currentDate, setCurrentDate] = useState(new Date())
+  const [editingVisit, setEditingVisit] = useState<ContractorVisit | null>(null)
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
 
   const getDaysInMonth = (date: Date) => {
     const year = date.getFullYear()
@@ -75,6 +80,22 @@ export function CalendarView({ data }: CalendarViewProps) {
 
   const today = () => {
     setCurrentDate(new Date())
+  }
+
+  const handleEditClick = (visit: ContractorVisit) => {
+    setEditingVisit(visit)
+    setIsEditDialogOpen(true)
+  }
+
+  const handleEditSave = (id: string, data: Partial<ContractorVisit>) => {
+    onUpdate(id, data)
+    setIsEditDialogOpen(false)
+    setEditingVisit(null)
+  }
+
+  const handleEditClose = () => {
+    setIsEditDialogOpen(false)
+    setEditingVisit(null)
   }
 
   const { daysInMonth, startingDayOfWeek, year, month } = getDaysInMonth(currentDate)
@@ -176,7 +197,10 @@ export function CalendarView({ data }: CalendarViewProps) {
                         content={<ContractorTooltip visit={visit} />}
                         side="top"
                       >
-                        <div className={`text-xs p-1.5 rounded border cursor-pointer hover:opacity-80 transition-opacity ${getStatusColor(visit.status)}`}>
+                        <div 
+                          className={`text-xs p-1.5 rounded border cursor-pointer hover:opacity-80 transition-opacity ${getStatusColor(visit.status)}`}
+                          onClick={() => handleEditClick(visit)}
+                        >
                           <div className="font-medium truncate">{visit.contractorName}</div>
                           <div className="text-[10px] truncate opacity-90">{visit.company}</div>
                           <div className="text-[10px] truncate opacity-75">{visit.timeIn}</div>
@@ -228,7 +252,10 @@ export function CalendarView({ data }: CalendarViewProps) {
                   content={<ContractorTooltip visit={visit} />}
                   side="left"
                 >
-                  <div className="flex items-center justify-between p-4 rounded-lg border border-border bg-card/50 hover:bg-card transition-colors cursor-pointer">
+                  <div 
+                    className="flex items-center justify-between p-4 rounded-lg border border-border bg-card/50 hover:bg-card transition-colors cursor-pointer"
+                    onClick={() => handleEditClick(visit)}
+                  >
                     <div className="flex-1 space-y-1">
                       <div className="flex items-center gap-3">
                         <span className="font-semibold text-foreground">{visit.contractorName}</span>
@@ -261,6 +288,13 @@ export function CalendarView({ data }: CalendarViewProps) {
           )}
         </CardContent>
       </Card>
+      
+      <EditContractorDialog
+        visit={editingVisit}
+        isOpen={isEditDialogOpen}
+        onClose={handleEditClose}
+        onSave={handleEditSave}
+      />
     </div>
   )
 }

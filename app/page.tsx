@@ -108,7 +108,7 @@ export default function ContractorDashboard() {
           </TabsContent>
 
           <TabsContent value="calendar">
-            <CalendarView data={contractors} />
+            <CalendarView data={contractors} onUpdate={handleUpdate} onDelete={handleDelete} />
           </TabsContent>
 
           <TabsContent value="analytics">
