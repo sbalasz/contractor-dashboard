@@ -5,6 +5,8 @@ import type { ContractorVisit } from "@/lib/types"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { Tooltip } from "@/components/ui/tooltip"
+import { ContractorTooltip } from "@/components/contractor-tooltip"
 import { ChevronLeft, ChevronRight, CalendarIcon } from "lucide-react"
 
 interface CalendarViewProps {
@@ -169,15 +171,17 @@ export function CalendarView({ data }: CalendarViewProps) {
                   </div>
                   <div className="space-y-1">
                     {visits.map((visit) => (
-                      <div
+                      <Tooltip
                         key={visit.id}
-                        className={`text-xs p-1.5 rounded border ${getStatusColor(visit.status)}`}
-                        title={`${visit.contractorName} - ${visit.company}\n${visit.jobType}\n${visit.timeIn} - ${visit.timeOut}`}
+                        content={<ContractorTooltip visit={visit} />}
+                        side="top"
                       >
-                        <div className="font-medium truncate">{visit.contractorName}</div>
-                        <div className="text-[10px] truncate opacity-90">{visit.company}</div>
-                        <div className="text-[10px] truncate opacity-75">{visit.timeIn}</div>
-                      </div>
+                        <div className={`text-xs p-1.5 rounded border cursor-pointer hover:opacity-80 transition-opacity ${getStatusColor(visit.status)}`}>
+                          <div className="font-medium truncate">{visit.contractorName}</div>
+                          <div className="text-[10px] truncate opacity-90">{visit.company}</div>
+                          <div className="text-[10px] truncate opacity-75">{visit.timeIn}</div>
+                        </div>
+                      </Tooltip>
                     ))}
                   </div>
                 </div>
@@ -219,36 +223,39 @@ export function CalendarView({ data }: CalendarViewProps) {
           ) : (
             <div className="space-y-3">
               {monthlyVisits.map((visit) => (
-                <div
+                <Tooltip
                   key={visit.id}
-                  className="flex items-center justify-between p-4 rounded-lg border border-border bg-card/50 hover:bg-card transition-colors"
+                  content={<ContractorTooltip visit={visit} />}
+                  side="left"
                 >
-                  <div className="flex-1 space-y-1">
-                    <div className="flex items-center gap-3">
-                      <span className="font-semibold text-foreground">{visit.contractorName}</span>
-                      <Badge variant="outline" className={getStatusColor(visit.status)}>
-                        {visit.status}
-                      </Badge>
+                  <div className="flex items-center justify-between p-4 rounded-lg border border-border bg-card/50 hover:bg-card transition-colors cursor-pointer">
+                    <div className="flex-1 space-y-1">
+                      <div className="flex items-center gap-3">
+                        <span className="font-semibold text-foreground">{visit.contractorName}</span>
+                        <Badge variant="outline" className={getStatusColor(visit.status)}>
+                          {visit.status}
+                        </Badge>
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        {visit.company} • {visit.jobType}
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        {new Date(visit.date).toLocaleDateString("en-US", {
+                          weekday: "short",
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                        })}
+                      </div>
                     </div>
-                    <div className="text-sm text-muted-foreground">
-                      {visit.company} • {visit.jobType}
-                    </div>
-                    <div className="text-xs text-muted-foreground">
-                      {new Date(visit.date).toLocaleDateString("en-US", {
-                        weekday: "short",
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric",
-                      })}
+                    <div className="text-right space-y-1">
+                      <div className="text-sm font-medium text-foreground">
+                        {visit.timeIn} - {visit.timeOut}
+                      </div>
+                      <div className="text-xs text-muted-foreground">{visit.recurrence}</div>
                     </div>
                   </div>
-                  <div className="text-right space-y-1">
-                    <div className="text-sm font-medium text-foreground">
-                      {visit.timeIn} - {visit.timeOut}
-                    </div>
-                    <div className="text-xs text-muted-foreground">{visit.recurrence}</div>
-                  </div>
-                </div>
+                </Tooltip>
               ))}
             </div>
           )}

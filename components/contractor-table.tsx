@@ -7,6 +7,9 @@ import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
+import { DatePicker } from "@/components/ui/date-picker"
+import { Tooltip } from "@/components/ui/tooltip"
+import { ContractorTooltip } from "@/components/contractor-tooltip"
 import { Pencil, Trash2, Check, X } from "lucide-react"
 
 interface ContractorTableProps {
@@ -70,7 +73,14 @@ export function ContractorTable({ data, onUpdate, onDelete }: ContractorTablePro
         </TableHeader>
         <TableBody>
           {data.map((visit) => (
-            <TableRow key={visit.id} className="border-border hover:bg-accent/50">
+            <TableRow key={visit.id} className="border-border hover:bg-accent/50 cursor-pointer group relative">
+              {/* Tooltip */}
+              <div className="absolute z-50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none top-full left-1/2 transform -translate-x-1/2 mt-2">
+                <div className="bg-popover border border-border rounded-md p-3 shadow-lg max-w-xs">
+                  <ContractorTooltip visit={visit} />
+                </div>
+                <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-popover border-l border-t border-border rotate-45"></div>
+              </div>
               <TableCell className="font-medium">
                 {editingId === visit.id ? (
                   <Input
@@ -106,10 +116,10 @@ export function ContractorTable({ data, onUpdate, onDelete }: ContractorTablePro
               </TableCell>
               <TableCell>
                 {editingId === visit.id ? (
-                  <Input
-                    type="date"
+                  <DatePicker
                     value={editData.date || ""}
-                    onChange={(e) => setEditData({ ...editData, date: e.target.value })}
+                    onChange={(date) => setEditData({ ...editData, date: date || "" })}
+                    placeholder="Select date"
                     className="h-8 bg-background"
                   />
                 ) : (
@@ -191,10 +201,10 @@ export function ContractorTable({ data, onUpdate, onDelete }: ContractorTablePro
               </TableCell>
               <TableCell>
                 {editingId === visit.id ? (
-                  <Input
-                    type="date"
+                  <DatePicker
                     value={editData.nextScheduled || ""}
-                    onChange={(e) => setEditData({ ...editData, nextScheduled: e.target.value })}
+                    onChange={(date) => setEditData({ ...editData, nextScheduled: date || "" })}
+                    placeholder="Select next visit"
                     className="h-8 bg-background"
                   />
                 ) : visit.nextScheduled ? (

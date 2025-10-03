@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
+import { DatePicker } from "@/components/ui/date-picker"
 import { Plus } from "lucide-react"
 
 interface AddContractorDialogProps {
@@ -136,12 +137,10 @@ export function AddContractorDialog({ onAdd }: AddContractorDialogProps) {
                 <Label htmlFor="date" className="text-foreground">
                   Date
                 </Label>
-                <Input
-                  id="date"
-                  type="date"
+                <DatePicker
                   value={formData.date}
-                  onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                  required
+                  onChange={(date) => setFormData({ ...formData, date: date || "" })}
+                  placeholder="Select date"
                   className="bg-background"
                 />
               </div>
@@ -221,11 +220,10 @@ export function AddContractorDialog({ onAdd }: AddContractorDialogProps) {
               <Label htmlFor="nextScheduled" className="text-foreground">
                 Next Scheduled Visit (Optional)
               </Label>
-              <Input
-                id="nextScheduled"
-                type="date"
+              <DatePicker
                 value={formData.nextScheduled}
-                onChange={(e) => setFormData({ ...formData, nextScheduled: e.target.value })}
+                onChange={(date) => setFormData({ ...formData, nextScheduled: date || "" })}
+                placeholder="Select next visit date"
                 className="bg-background"
               />
             </div>
